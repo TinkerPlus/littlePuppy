@@ -42,19 +42,26 @@ def get_position(img):
 		print 'find no blobs'
 		
 	
-def left_or_right((x,y)):
+def get_command((x,y)):
 	'''
 	compare x with middle of this image,
 	if x > middle_X, return right
 	if x < middle_X, return left
 	'''
 	x_target, y_target = (x,y)
-	if x_target > x_middle:
+	cam_width = 640
+	left_boarder  = 210
+	right_boarder = can_width - left_boarder
+	
+	if x_target > right_boarder:
 		print 'target is in right'
 		return 'L'
-	elif x_target < x_middle:
+	elif x_target < left_boarder:
 		print 'target is in left'
 		return 'R'
+	else:
+		print 'target is on forward'
+		return 'F'
 
 def call_arduino(command):
 	port.println(command)
@@ -82,7 +89,7 @@ while True:
 	if(get_position(img)):
 		position = get_position(img)
 		print position
-		command = left_or_right(position)
+		command = get_command(position)
 		ser.write(command)
         
         
