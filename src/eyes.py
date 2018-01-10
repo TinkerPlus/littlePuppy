@@ -2,13 +2,8 @@
 
 from SimpleCV import Camera
 import time
+import serial
 
-
-cam = Camera()
-# half of the width: 320
-x_middle = 320
-
-	
 def filter_image(img):
 	'''
 	filter the image, get the light circle
@@ -56,19 +51,38 @@ def left_or_right((x,y)):
 	x_target, y_target = (x,y)
 	if x_target > x_middle:
 		print 'target is in right'
-		return 'right'
+		return 'L'
 	elif x_target < x_middle:
 		print 'target is in left'
-		return 'left'
+		return 'R'
 
+def call_arduino(command):
+	port.println(command)
+
+
+def serial_test():
+	'''
+	for testing serial
+    '''
+	for i in range(0,10):
+		ser.write("F")
+        time.sleep(1)
+        ser.write("S")
+        time.sleep(1)
 
 
 while True:
+	cam = Camera()
+	ser = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout = 3.0)
+	# half of the width: 320
+	x_middle = 320
 	img = cam.getImage()
 	img = filter_image(img)
 	if(get_position(img)):
 		position = get_position(img)
 		print position
-		left_or_right(position)
+		command = left_or_right(position)
+		ser.write(command)
+        
+        
 	
-	time.sleep(0.1)

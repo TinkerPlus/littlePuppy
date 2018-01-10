@@ -1,7 +1,3 @@
-// Adafruit Motor shield library
-// copyright Adafruit Industries LLC, 2009
-// this code is public domain, enjoy!
-
 #include <AFMotor.h>
 
 AF_DCMotor motoryou(3);//右轮马达接到m3上
@@ -69,3 +65,4 @@ void nowstop(uint8_t tim=20)
   motoryou.run(RELEASE); 
   delay(100*tim);
 }
+
