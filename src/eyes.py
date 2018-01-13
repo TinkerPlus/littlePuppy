@@ -2,11 +2,14 @@
 
 from SimpleCV import Camera
 import time
-
+import serial
 
 cam = Camera()
+port = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout = 3.0)
 # half of the width: 320
 x_middle = 320
+
+
 
 	
 def filter_image(img):
@@ -60,6 +63,10 @@ def left_or_right((x,y)):
 	elif x_target < x_middle:
 		print 'target is in left'
 		return 'left'
+
+def call_arduino(command):
+		port.println(command)
+
 
 
 

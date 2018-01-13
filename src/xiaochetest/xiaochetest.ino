@@ -48,7 +48,7 @@ void loop() {
 }
 
 void set_serial(){
-  Serial.begin(115200);           // set up Serial library at 9600 bps
+  Serial.begin(9600);           // set up Serial library at 9600 bps
   Serial.println("Motor test!");
 }
 void set_motors(){
