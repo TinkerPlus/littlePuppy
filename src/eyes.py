@@ -3,8 +3,20 @@
 from SimpleCV import Camera
 import time
 import serial
+<<<<<<< HEAD
 import RPi.GPIO as GPIO
 
+=======
+
+cam = Camera()
+port = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout = 3.0)
+# half of the width: 320
+x_middle = 320
+
+
+
+	
+>>>>>>> e969540f41ce6c5b925ba4e125a01aef7e3669be
 def filter_image(img):
     '''
     filter the image, get the light circle
@@ -66,6 +78,10 @@ def get_command((x,y)):
 
 def call_arduino(command):
     port.println(command)
+
+def call_arduino(command):
+		port.println(command)
+
 
 
 def serial_test():
