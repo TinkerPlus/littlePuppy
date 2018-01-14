@@ -75,8 +75,8 @@ void forward(uint8_t p_spd=200,uint8_t p_tim=20){ // p for paremeter
     //Serial.println("No danger, move forward");
   motorzuo.run(BACKWARD);
   motoryou.run(BACKWARD); 
-  motorzuo.setSpeed(p_spd + 50);   // 10 meets upl left speed slow 
-  motoryou.setSpeed(p_spd); 
+  motorzuo.setSpeed(p_spd);   
+  motoryou.setSpeed(p_spd);  
   delay(100*p_tim);
 }
 void backward(uint8_t p_spd=200,uint8_t p_tim=20){
@@ -103,11 +103,10 @@ void rightturn(uint8_t p_turn_spd=200,uint8_t p_tim=20){
 void nowstop(uint8_t p_tim=20){
   motorzuo.run(RELEASE);
   motoryou.run(RELEASE); 
-  delay(100*p_tim);
+  delay(p_tim);
 }
 void random_run(){
-  randomSeed(digitalRead(10
-  ));
+  randomSeed(digitalRead(10));
   /* get a random num (0, 1, 2, 3, 4)
   switch case(num)
   0 for stop
@@ -133,9 +132,14 @@ void random_run(){
   }
 }
 void go_home(char p_command){   //p for paremeter
+  uint8_t l_turn_spd = 150;
+  uint8_t l_spd = 200;
+  uint8_t l_turn_tim = 1;
+  uint8_t l_stop_tim = 150;
+  
   switch(p_command){
-    case('L'): { leftturn(g_turn_spd, g_turn_tim); nowstop(g_tim); break;}
-    case('R'): { rightturn(g_turn_spd, g_turn_tim); nowstop(g_tim); break;}
+    case('L'): { leftturn(l_turn_spd, l_turn_tim);  nowstop(l_stop_tim); break;}
+    case('R'): { rightturn(l_turn_spd, l_turn_tim); nowstop(l_stop_tim);  break;}
     case('F'): { forward(g_spd, g_tim); break;}
     case('B'): { backward(g_spd, g_tim); break;}
     case('S'): { nowstop(g_tim); break;}
