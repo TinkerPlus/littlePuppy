@@ -5,7 +5,7 @@ import time
 import serial
 import RPi.GPIO as GPIO
 
-def filter_image(img):
+def filter_image(p_img): # p for paremeter
     '''
     filter the image, get the light circle
     return a image only contains light circle
@@ -24,30 +24,31 @@ def filter_image(img):
     '''
     # calculate distance between target point and others,
     ## the closer to target color, the more black. 
-    blueDist = img.colorDistance((255.0, 182.0, 1.0))
+    blueDist = p_img.colorDistance((255.0, 182.0, 1.0))
     # select pixel who's gray degree islarger than set velue.
     ## then invert, target area is black finally.
     blueDistBin = blueDist.binarize(50)
     return blueDistBin
 
-def get_position(img):
+def get_position(p_img):
     '''
     find middle point of the light circle
     return x,y
     '''
-    blobs = img.findBlobs()
+    blobs = p_img.findBlobs()
     if blobs:
         position = tuple(blobs[0].coordinates())
         return position
     else:
         print 'find no blobs'
+        return False
         
     
-def get_command((x,y)):
+def get_command((p_x,p_y)):
     '''
     compare x with middle of this image,
-    if x > middle_X, return right
-    if x < middle_X, return left
+    if p_x > middle_X, return right
+    if p_x < middle_X, return left
     '''
     x_target, y_target = (x,y)
     cam_width = 640
@@ -100,16 +101,20 @@ def clean_up_GPIO():
     l_HUMAN_PIN = 12
     GPIO.cleanup(l_HUMAN_PIN)
 
+
+cam = Camera()
+
 while True:
 
     
-    cam = Camera()
+    
     ser = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout = 3.0)
     # half of the width: 320
     x_middle = 320
     img = cam.getImage()
     img = filter_image(img)
     if(get_position(img)):
+        '''
         position = get_position(img)
         print position
         command = get_command(position)
@@ -117,12 +122,14 @@ while True:
         if (command):
             #ser.write(command)
             call_arduino(command)
-            
+        '''
+        ser.write('F')   
+        print("target is on  forward")  
     else:
         ser.write("L")
         print("Turn left to find target")
     
-    time.sleep(0.1)
+    time.sleep(0.01)
     '''
     try:
         setup_GPIO()
