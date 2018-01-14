@@ -3,20 +3,8 @@
 from SimpleCV import Camera
 import time
 import serial
-<<<<<<< HEAD
 import RPi.GPIO as GPIO
 
-=======
-
-cam = Camera()
-port = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout = 3.0)
-# half of the width: 320
-x_middle = 320
-
-
-
-	
->>>>>>> e969540f41ce6c5b925ba4e125a01aef7e3669be
 def filter_image(img):
     '''
     filter the image, get the light circle
@@ -72,16 +60,15 @@ def get_command((x,y)):
     elif x_target < left_boarder:
         print 'target is in left'
         return 'R'
-    else:
+    elif x_target > left_boarder and x_target < right_boarder:
         print 'target is on forward'
         return 'F'
+    else:
+        return ''
 
-def call_arduino(command):
-    port.println(command)
-
-def call_arduino(command):
-		port.println(command)
-
+def call_arduino(p_command):
+    #ser.write('R')
+    ser.write(p_command)
 
 
 def serial_test():
@@ -95,7 +82,7 @@ def serial_test():
         time.sleep(1)
 
 def setup_GPIO():
-    l_HUMAN_PIN = 7
+    l_HUMAN_PIN = 12
     GPIO.setmode(GPIO.BOARD)
     #print("GPIO mode: "+str(GPIO:getmode())
     #GPIO.setwarnings(False) # ignore warning that changing mode from input to output
@@ -104,18 +91,18 @@ def setup_GPIO():
     
     
 def is_alarm():
-    l_HUMAN_PIN = 7
+    l_HUMAN_PIN = 12
     if GPIO.input(l_HUMAN_PIN) == 1:
         return True
     else:
         return 0
 def clean_up_GPIO():
-    l_HUMAN_PIN = 7
+    l_HUMAN_PIN = 12
     GPIO.cleanup(l_HUMAN_PIN)
 
 while True:
 
-    '''
+    
     cam = Camera()
     ser = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout = 3.0)
     # half of the width: 320
@@ -126,7 +113,16 @@ while True:
         position = get_position(img)
         print position
         command = get_command(position)
-        ser.write(command)
+        print ("Command sent: "+command)
+        if (command):
+            #ser.write(command)
+            call_arduino(command)
+            
+    else:
+        ser.write("L")
+        print("Turn left to find target")
+    
+    time.sleep(0.1)
     '''
     try:
         setup_GPIO()
@@ -140,7 +136,7 @@ while True:
     except KeyboardInterrupt:
         clean_up_GPIO()
         print "All cleanup."
-    
+    '''
         
         
     
