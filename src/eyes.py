@@ -50,7 +50,7 @@ def get_command((p_x,p_y)):
     if p_x > middle_X, return right
     if p_x < middle_X, return left
     '''
-    x_target, y_target = (x,y)
+    x_target, y_target = (p_x, p_y)
     cam_width = 640
     left_boarder  = 210
     right_boarder = cam_width - left_boarder
@@ -63,7 +63,7 @@ def get_command((p_x,p_y)):
         return 'R'
     elif x_target > left_boarder and x_target < right_boarder:
         print 'target is on forward'
-        return 'F'
+        return 'S'
     else:
         return ''
 
@@ -103,17 +103,17 @@ def clean_up_GPIO():
 
 
 cam = Camera()
+ser = serial.Serial("/dev/ttyUSB0", baudrate=115200, timeout = 3.0)
+x_middle = 320 # half of the width: 320
 
-while True:
+is_forward = 0
 
-    
-    
-    ser = serial.Serial("/dev/ttyUSB0", baudrate=9600, timeout = 3.0)
-    # half of the width: 320
-    x_middle = 320
+while not is_forward:
     img = cam.getImage()
     img = filter_image(img)
+    
     if(get_position(img)):
+        
         '''
         position = get_position(img)
         print position
@@ -123,27 +123,15 @@ while True:
             #ser.write(command)
             call_arduino(command)
         '''
-        ser.write('F')   
-        print("target is on  forward")  
+        #ser.write('R')
+        ser.write('S')   
+        print("target is on  forward") 
+        #is_forward = 1
     else:
         ser.write("L")
         print("Turn left to find target")
-    
-    time.sleep(0.01)
-    '''
-    try:
-        setup_GPIO()
-        alarm = is_alarm()
-        if alarm:
-            print("Alarm!\n")
-        else:
-            print("No alarm\n")
-        time.sleep(1)
-        
-    except KeyboardInterrupt:
-        clean_up_GPIO()
-        print "All cleanup."
-    '''
-        
-        
+        #is_forward = 0
+
+#ser.write('R')
+
     

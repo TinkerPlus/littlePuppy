@@ -7,7 +7,7 @@
 #define ECHO_PIN 15 //mean A1
 #define MAX_DISTANCE 200
 #define HUMAN_PIN A2 // human sensor
-#define bool int  // define type bool
+//#define bool int  // define type bool
 
 // define some values
 uint8_t g_spd=200;  // g for global
@@ -22,8 +22,8 @@ bool danger = 0;
 
 
 // initialize some instances
-AF_DCMotor motoryou(3);//右轮马达接到m3上
-AF_DCMotor motorzuo(4);//左轮马达接到m4上
+AF_DCMotor motoryou(4);//右轮马达接到m3上
+AF_DCMotor motorzuo(3);//左轮马达接到m4上
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);// NewPing setup of pins
  
  
@@ -52,15 +52,11 @@ char get_command();
 void print_sonar();
 void print_human_sensor();
 
-
-
-
-
 // funciton body
 
 //// setup
 void setup_serial(){
-  Serial.begin(9600);           
+  Serial.begin(115200);           
   Serial.println("Motor test!");
 }
 void setup_motors(){
@@ -75,35 +71,35 @@ void forward(uint8_t p_spd=200,uint8_t p_tim=20){ // p for paremeter
     //Serial.println("No danger, move forward");
   motorzuo.run(BACKWARD);
   motoryou.run(BACKWARD); 
-  motorzuo.setSpeed(p_spd);   
+  motorzuo.setSpeed(p_spd + 30);   
   motoryou.setSpeed(p_spd);  
-  delay(100*p_tim);
+  delay(10*p_tim);
 }
 void backward(uint8_t p_spd=200,uint8_t p_tim=20){
   motorzuo.run(FORWARD);
   motoryou.run(FORWARD);
-  motorzuo.setSpeed(p_spd);    
+  motorzuo.setSpeed(p_spd + 20);    
   motoryou.setSpeed(p_spd); 
-  delay(100*p_tim);
+  delay(10*p_tim);
 }
 void leftturn(uint8_t p_turn_spd=200,uint8_t p_tim=20){
   motorzuo.run(FORWARD);
   motoryou.run(BACKWARD); 
   motorzuo.setSpeed(p_turn_spd);    
   motoryou.setSpeed(p_turn_spd); 
-  delay(100*p_tim);
+  delay(10*p_tim);
 }
 void rightturn(uint8_t p_turn_spd=200,uint8_t p_tim=20){
   motoryou.run(FORWARD);
-  motorzuo.run(BACKWARD); 
+  motorzuo.run(BACKWARD);
   motorzuo.setSpeed(p_turn_spd);    
   motoryou.setSpeed(p_turn_spd); 
-  delay(100*p_tim);
+  delay(10*p_tim);
 }
 void nowstop(uint8_t p_tim=20){
   motorzuo.run(RELEASE);
   motoryou.run(RELEASE); 
-  delay(p_tim);
+  delay(10*p_tim);
 }
 void random_run(){
   randomSeed(digitalRead(10));
@@ -134,13 +130,18 @@ void random_run(){
 void go_home(char p_command){   //p for paremeter
   uint8_t l_turn_spd = 150;
   uint8_t l_spd = 200;
-  uint8_t l_turn_tim = 1;
-  uint8_t l_stop_tim = 150;
+  uint8_t l_turn_tim = 2;  //40 ms
+  uint8_t l_stop_tim = 2;
   
   switch(p_command){
-    case('L'): { leftturn(l_turn_spd, l_turn_tim);  nowstop(l_stop_tim); break;}
-    case('R'): { rightturn(l_turn_spd, l_turn_tim); nowstop(l_stop_tim);  break;}
-    case('F'): { forward(g_spd, g_tim); break;}
+    case('L'): { 
+      leftturn(l_turn_spd, l_turn_tim);
+      //rightturn(l_turn_spd, l_turn_tim);
+      nowstop(l_stop_tim);
+      break;
+    }
+    case('R'): { rightturn(l_turn_spd, l_turn_tim); /*nowstop(l_stop_tim);*/  break;}
+    case('F'): { forward(g_spd, g_tim*100); break;}
     case('B'): { backward(g_spd, g_tim); break;}
     case('S'): { nowstop(g_tim); break;}
     //case('S'): { nowstop(tim); break;}
@@ -156,10 +157,26 @@ bool is_danger(){
     return 0;
 }
 bool is_alarm(){
-  int l_human_sensor = analogRead(HUMAN_PIN);
-  if (l_human_sensor == 1023) return 1;
+  int alarmArrayNum = 3;
+  int sensorArray[alarmArrayNum];
+  for (int i=0; i<alarmArrayNum; i++){
+    sensorArray[i] = analogRead(HUMAN_PIN);
+  }
+  //Serial.println(l_human_sensor);
+  int res = 0;
+  for (int i=0; i<alarmArrayNum; i++){
+    if(sensorArray[i]==1023) res++;
+  }
+  if (res == alarmArrayNum) return 1;
   else return 0;
 }
+void update_alarm(){
+  nowstop(10);
+  alarm = is_alarm();
+  nowstop(3);
+}
+
+
 //// communication
 char get_command(){
   //char l_command = ' '; // l for local value
@@ -172,9 +189,9 @@ char get_command(){
 }
 //// debug
 void print_sonar(){
-    Serial.print("Ping: ");
-    Serial.print(sonar.ping_cm());
-    Serial.println("cm");
+  Serial.print("Ping: ");
+  Serial.print(sonar.ping_cm());
+  Serial.println("cm");
 }
 void print_human_sensor(){
   Serial.print("Human sensor: ");
