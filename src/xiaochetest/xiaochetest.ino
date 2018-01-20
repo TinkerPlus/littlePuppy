@@ -19,8 +19,8 @@ void setup() {
 }
 void loop() {
   
-  //alarm = is_alarm(); // if alarm return 1; else return 0
-  alarm = 1;
+  alarm = is_alarm(); // if alarm return 1; else return 0
+  //alarm = 1;
   while (!alarm){  // alarm == 0, no alarm
     //print_sonar();
     Serial.println("Random Mode");

@@ -128,10 +128,10 @@ void random_run(){
   }
 }
 void go_home(char p_command){   //p for paremeter
-  uint8_t l_turn_spd = 150;
+  uint8_t l_turn_spd = 100;
   uint8_t l_spd = 200;
   uint8_t l_turn_tim = 2;  //40 ms
-  uint8_t l_stop_tim = 2;
+  uint8_t l_stop_tim = 6;
   
   switch(p_command){
     case('L'): { 

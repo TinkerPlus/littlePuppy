@@ -27,7 +27,8 @@ def filter_image(p_img): # p for paremeter
     blueDist = p_img.colorDistance((255.0, 182.0, 1.0))
     # select pixel who's gray degree islarger than set velue.
     ## then invert, target area is black finally.
-    blueDistBin = blueDist.binarize(50)
+    blueDistBin = blueDist.binarize(60)
+    #blueDistBin.show()
     return blueDistBin
 
 def get_position(p_img):
@@ -111,7 +112,7 @@ is_forward = 0
 while not is_forward:
     img = cam.getImage()
     img = filter_image(img)
-    
+    #targetCount = 0
     if(get_position(img)):
         
         '''
@@ -123,7 +124,7 @@ while not is_forward:
             #ser.write(command)
             call_arduino(command)
         '''
-        #ser.write('R')
+        #ser.write('R'
         ser.write('S')   
         print("target is on  forward") 
         #is_forward = 1
