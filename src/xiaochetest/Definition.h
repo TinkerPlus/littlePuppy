@@ -1,12 +1,14 @@
 #include <AFMotor.h>
 #include <NewPing.h>
-
+#include <Adafruit_NeoPixel.h>
 
 //prepare process
 #define TRIGGER_PIN 14 // mean A0
 #define ECHO_PIN 15 //mean A1
 #define MAX_DISTANCE 200
 #define HUMAN_PIN A2 // human sensor
+#define LED_PIN 19
+#define NUMPIXELS      30
 //#define bool int  // define type bool
 
 // define some values
@@ -17,6 +19,7 @@ uint8_t g_turn_tim = 1; //100 ms
 char command = ' ';
 bool alarm = 0;
 bool danger = 0;
+int delayval = 0; // delay for half a second
 //long l_randNumer = -1; // for random run
 
 
@@ -25,7 +28,7 @@ bool danger = 0;
 AF_DCMotor motoryou(4);//右轮马达接到m3上
 AF_DCMotor motorzuo(3);//左轮马达接到m4上
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);// NewPing setup of pins
- 
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
  
  
  
@@ -35,6 +38,7 @@ NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE);// NewPing setup of pins
 //// setup 
 void setup_serial();
 void setup_motors();
+void setup_led();
 //// movement
 void forward(uint8_t,uint8_t);//前进函数
 void backward(uint8_t,uint8_t);//后退函数
@@ -46,6 +50,9 @@ void go_home(char p_command);
 //// sensor 
 bool is_danger(); // if puppy is too close to something
 bool is_alarm();  // if people is close.
+//// led
+void led_set_red();
+void led_set_green();
 //// communication
 char get_command();
 //// debug
@@ -64,6 +71,15 @@ void setup_motors(){
   motoryou.setSpeed(200);
   motorzuo.run(RELEASE);
   motoryou.run(RELEASE);
+}
+void setup_led(){
+  // This is for Trinket 5V 16MHz, you can remove these three lines if you are not using a Trinket
+#if defined (__AVR_ATtiny85__)
+  if (F_CPU == 16000000) clock_prescale_set(clock_div_1);
+#endif
+  // End of trinket special code
+
+  pixels.begin(); // This initializes the NeoPixel library.
 }
 
 //// movements
@@ -102,6 +118,7 @@ void nowstop(uint8_t p_tim=20){
   delay(10*p_tim);
 }
 void random_run(){
+  led_set_green();
   randomSeed(digitalRead(10));
   /* get a random num (0, 1, 2, 3, 4)
   switch case(num)
@@ -128,6 +145,7 @@ void random_run(){
   }
 }
 void go_home(char p_command){   //p for paremeter
+  led_set_red();
   uint8_t l_turn_spd = 150;
   uint8_t l_spd = 200;
   uint8_t l_turn_tim = 2;  //40 ms
@@ -175,7 +193,30 @@ void update_alarm(){
   alarm = is_alarm();
   nowstop(3);
 }
+//// led
+void led_set_red(){
+  for(int i=0;i<NUMPIXELS;i++){
 
+    // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
+    //pixels.setPixelColor(i, pixels.Color(0,150,0)); // Moderately bright green color.
+    pixels.setPixelColor(i, pixels.Color(150,0,0)); // Moderately bright green color.
+
+    pixels.show(); // This sends the updated pixel color to the hardware.
+
+    delay(delayval); // Delay for a period of time (in milliseconds).
+  }
+}
+void led_set_green(){
+  for(int i=0;i<NUMPIXELS;i++){
+
+    // pixels.Color takes RGB values, from 0,0,0 up to 255,255,255
+    pixels.setPixelColor(i, pixels.Color(0,150,0)); // Moderately bright green color.
+    //pixels.setPixelColor(i, pixels.Color(150,0,0)); // Moderately bright green color.
+
+    pixels.show(); // This sends the updated pixel color to the hardware.
+    delay(delayval); // Delay for a period of time (in milliseconds).
+  }
+}
 
 //// communication
 char get_command(){
