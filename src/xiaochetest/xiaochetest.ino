@@ -1,10 +1,13 @@
 #include <Event.h>
 #include <Timer.h>
-
 #include <NewPing.h>
 #include <AFMotor.h>
 #include "Definition.h"
 
+#include <Adafruit_NeoPixel.h>
+#ifdef __AVR__
+  #include <avr/power.h>
+#endif
 
 
 unsigned int move_range = 100; // 10 for test; 100 for use
@@ -14,7 +17,8 @@ Timer t;
 
 void setup() {
   setup_serial();
-  setup_motors;
+  setup_motors();
+  setup_led();
   int tickEvent = t.every(2000, update_alarm);
 }
 void loop() {
@@ -35,6 +39,7 @@ void loop() {
   Serial.println(lastMill);
   
   while (alarm){ // alarm == 1, alarm!
+    //led_set_red();
     //print_sonar();
     Serial.println("Home Mode");
     print_human_sensor();

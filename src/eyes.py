@@ -125,7 +125,7 @@ while not is_forward:
             call_arduino(command)
         '''
         #ser.write('R'
-        ser.write('S')   
+        ser.write('F')   
         print("target is on  forward") 
         #is_forward = 1
     else:
